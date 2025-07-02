@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+numpy
+scikit-learn
+numba
+mmh3
+sentence-transformers
+faiss-cpu
+pandas
+redis
+aiofiles
+pydantic-settings
+pytest
