@@ -21,10 +21,10 @@ Before you begin, ensure you have the following installed:
 cd C:\Users\YourUsername\Documents
 
 # Clone the repository
-git clone https://github.com/yourusername/ultra_fast_search_system.git
+git clone https://github.com/puneetrinity/ideal-octo-goggles.git
 
 # Navigate into the project directory
-cd ultra_fast_search_system
+cd ideal-octo-goggles
 ```
 
 ### 2. Configure Environment Variables

@@ -25,8 +25,8 @@ Before starting, ensure you have:
 
 1. **Clone the repository:**
    ```powershell
-   git clone https://github.com/yourusername/ultra_fast_search_system.git
-   cd ultra_fast_search_system
+   git clone https://github.com/puneetrinity/ideal-octo-goggles.git
+   cd ideal-octo-goggles
    ```
 
 2. **Run the automated setup:**
@@ -58,8 +58,8 @@ If you prefer to set up manually or the scripts don't work for your environment:
 
 1. **Clone and navigate:**
    ```powershell
-   git clone https://github.com/yourusername/ultra_fast_search_system.git
-   cd ultra_fast_search_system
+   git clone https://github.com/puneetrinity/ideal-octo-goggles.git
+   cd ideal-octo-goggles
    ```
 
 2. **Create environment file:**

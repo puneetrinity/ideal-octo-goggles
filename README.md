@@ -46,8 +46,8 @@ For the fastest setup experience, see our setup guides:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/ultra_fast_search_system.git
-    cd ultra_fast_search_system
+    git clone https://github.com/puneetrinity/ideal-octo-goggles.git
+    cd ideal-octo-goggles
     ```
 
 2.  **Create a `.env` file:**
