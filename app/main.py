@@ -17,11 +17,15 @@ from app.logger import get_enhanced_logger
 from app.config import settings
 from app.monitoring.health import HealthChecker
 
+# RAG imports
+from app.rag.integration import initialize_rag_system, shutdown_rag_system, get_rag_health
+from app.rag.api import router as rag_router
+
 logger = get_enhanced_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting up Ultra-Fast Search System...")
+    logger.info("Starting up Ultra-Fast Search System with RAG capabilities...")
     
     try:
         # Initialize the search engine and batch processor
@@ -34,6 +38,12 @@ async def lifespan(app: FastAPI):
         # Initialize health checker
         health_checker_instance = HealthChecker(search_engine)
         
+        # Initialize RAG system
+        await initialize_rag_system(
+            embedding_dim=settings.embedding_dim,
+            use_gpu=settings.use_gpu
+        )
+        
         # Make components available to the API router
         api_module.search_engine = search_engine
         api_module.health_checker = health_checker_instance
@@ -43,7 +53,8 @@ async def lifespan(app: FastAPI):
         
         logger.info("System startup completed successfully", extra_fields={
             'embedding_dim': settings.embedding_dim,
-            'use_gpu': settings.use_gpu
+            'use_gpu': settings.use_gpu,
+            'rag_enabled': True
         })
         
         yield
@@ -62,15 +73,18 @@ async def lifespan(app: FastAPI):
             # Cleanup batch processor
             await batch_processor.shutdown()
             
+            # Shutdown RAG system
+            await shutdown_rag_system()
+            
             logger.info("System shutdown completed")
         except Exception as e:
             logger.error("Error during shutdown", extra_fields={'error': str(e)})
 
 
 app = FastAPI(
-    title="Ultra-Fast Data Analysis System",
-    description="A high-performance search system using advanced algorithms.",
-    version="2.0.0",
+    title="Ultra-Fast Data Analysis System with RAG",
+    description="A high-performance search system using advanced algorithms with RAG capabilities.",
+    version="2.1.0",
     lifespan=lifespan
 )
 
@@ -82,11 +96,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include routers
 app.include_router(search_router)
+app.include_router(rag_router)
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to the Ultra-Fast Data Analysis System"}
+    return {"message": "Welcome to the Ultra-Fast Data Analysis System with RAG"}
+
+@app.get("/health")
+async def health_check():
+    """Enhanced health check including RAG system"""
+    try:
+        rag_health = await get_rag_health()
+        return {
+            "status": "healthy",
+            "message": "Ultra-Fast Search System with RAG is running",
+            "rag_system": rag_health
+        }
+    except Exception as e:
+        return {
+            "status": "partial",
+            "message": "Search system running, RAG system may have issues",
+            "error": str(e)
+        }
 
 # Install uvloop for high-performance (Unix/Linux only)
 if sys.platform != "win32":
