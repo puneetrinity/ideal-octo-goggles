@@ -161,3 +161,9 @@ yarn-error.log*
 *.temp
 *.bak
 *.backup
+
+# RAG System - Test and Development Files
+data/test_rag.db
+data/rag_documents.db
+data/sample_documents/
+test_chunking.py
