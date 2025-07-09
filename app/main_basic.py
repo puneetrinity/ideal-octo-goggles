@@ -1,10 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List, Optional
+import os
 
 app = FastAPI(
-    title="Basic Search API",
-    description="A basic FastAPI service for Railway deployment",
-    version="1.0.0"
+    title="Search API - Railway Deployed",
+    description="Search API deployed on Railway - incrementally adding features",
+    version="1.1.0"
 )
 
 app.add_middleware(
@@ -15,18 +18,59 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mock data for testing
+mock_documents = [
+    {"id": 1, "title": "Introduction to AI", "content": "Artificial Intelligence basics and fundamentals"},
+    {"id": 2, "title": "Machine Learning Guide", "content": "Complete guide to machine learning algorithms"},
+    {"id": 3, "title": "Data Science Overview", "content": "Overview of data science methodologies and tools"}
+]
+
+class SearchRequest(BaseModel):
+    query: str
+    limit: Optional[int] = 10
+
 @app.get("/")
 async def root():
-    return {"message": "Basic Search API is running on Railway!"}
+    return {
+        "message": "Search API is running on Railway!",
+        "environment": os.getenv("RAILWAY_ENVIRONMENT", "unknown"),
+        "port": os.getenv("PORT", "8000")
+    }
 
 @app.get("/health")
 async def health_check():
     return {
         "status": "healthy",
-        "message": "Service is running",
-        "service": "basic-search-api"
+        "message": "Search API is operational",
+        "service": "search-api",
+        "documents_count": len(mock_documents)
     }
 
-@app.get("/test")
-async def test():
-    return {"test": "Railway deployment successful!"}
+@app.post("/search")
+async def search(request: SearchRequest):
+    """Basic text search in mock documents"""
+    results = []
+    query_lower = request.query.lower()
+    
+    for doc in mock_documents:
+        if query_lower in doc["title"].lower() or query_lower in doc["content"].lower():
+            results.append({
+                "id": doc["id"],
+                "title": doc["title"],
+                "content": doc["content"],
+                "score": 0.85  # Mock score
+            })
+    
+    return {
+        "query": request.query,
+        "results": results[:request.limit],
+        "total_found": len(results)
+    }
+
+@app.get("/documents")
+async def list_documents():
+    """List all available documents"""
+    return {
+        "documents": mock_documents,
+        "total": len(mock_documents)
+    }
