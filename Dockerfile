@@ -25,8 +25,11 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir numpy==1.25.2
 RUN pip install --no-cache-dir scipy
 RUN pip install --no-cache-dir scikit-learn==1.3.2
-RUN pip install --no-cache-dir faiss-cpu==1.7.4
 RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir transformers==4.36.2
+RUN pip install --no-cache-dir huggingface_hub==0.19.4
+RUN pip install --no-cache-dir sentence-transformers==2.4.0
+RUN pip install --no-cache-dir faiss-cpu==1.7.4
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code to the working directory
