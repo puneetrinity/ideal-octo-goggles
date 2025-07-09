@@ -35,8 +35,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code to the working directory
 COPY ./app /app/app
 
-# Create directories for local development (Railway volume will override /app/data)
-RUN mkdir -p /app/data/indexes /app/indexes
+# Create directories for local development and temp storage
+RUN mkdir -p /app/data/indexes /app/indexes /tmp/indexes /tmp/data
 
 # Expose port
 EXPOSE 8000
