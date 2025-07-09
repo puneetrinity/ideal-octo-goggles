@@ -19,4 +19,4 @@ RUN mkdir -p /app/data/indexes /app/indexes /tmp/indexes /tmp/data
 EXPOSE 8000
 
 # Command to run basic FastAPI app without ML dependencies
-CMD ["sh", "-c", "uvicorn app.main_basic:app --host 0.0.0.0 --port $PORT"]
+CMD ["sh", "-c", "uvicorn app.main_basic:app --host 0.0.0.0 --port ${PORT:-8000}"]
