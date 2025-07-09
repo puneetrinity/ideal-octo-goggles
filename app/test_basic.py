@@ -12,14 +12,16 @@ class TestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         
         response = {
-            "message": "Basic Python HTTP server",
+            "message": "Basic Python HTTP server working!",
             "port": os.getenv("PORT", "8000"),
-            "path": self.path
+            "path": self.path,
+            "railway_env": os.getenv("RAILWAY_ENVIRONMENT", "not set")
         }
         self.wfile.write(json.dumps(response).encode())
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
+    port = int(os.getenv("PORT", 8080))
     server = HTTPServer(('0.0.0.0', port), TestHandler)
-    print(f"Starting basic HTTP server on port {port}")
+    print(f"Starting basic HTTP server on 0.0.0.0:{port}")
+    print(f"PORT environment variable: {os.getenv('PORT', 'not set')}")
     server.serve_forever()
