@@ -3,7 +3,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copy test files
-COPY app/test_basic.py app/test_basic.py
+COPY app/test_minimal.py app/test_minimal.py
 
-# Test 4: Pure Python HTTP server (no dependencies)
-CMD ["python", "app/test_basic.py"]
+# Test 5: Just print and exit (no web server)
+CMD ["python", "app/test_minimal.py"]
