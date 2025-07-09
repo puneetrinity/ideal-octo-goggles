@@ -3,6 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Log environment variables for debugging
+logger.info(f"PORT environment variable: {os.getenv('PORT', 'NOT SET')}")
+logger.info(f"RAILWAY_ENVIRONMENT: {os.getenv('RAILWAY_ENVIRONMENT', 'NOT SET')}")
+logger.info(f"All environment variables: {dict(os.environ)}")
 
 app = FastAPI(
     title="Search API - Railway Deployed",
@@ -43,7 +53,9 @@ async def health_check():
         "status": "healthy",
         "message": "Search API is operational",
         "service": "search-api",
-        "documents_count": len(mock_documents)
+        "documents_count": len(mock_documents),
+        "port": os.getenv("PORT", "NOT SET"),
+        "railway_env": os.getenv("RAILWAY_ENVIRONMENT", "NOT SET")
     }
 
 @app.post("/search")
