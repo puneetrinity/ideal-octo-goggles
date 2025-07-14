@@ -3,30 +3,31 @@ from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import sys
 import os
+import logging
 from contextlib import asynccontextmanager
 
-# Import only essential modules for Railway deployment
-try:
-    from app.config import settings
-    from app.logger import get_enhanced_logger
-    logger = get_enhanced_logger(__name__)
-except ImportError as e:
-    # Fallback logger if imports fail
-    import logging
-    logger = logging.getLogger(__name__)
-    logger.error(f"Import error: {e}")
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Log environment variables for debugging
+logger.info(f"Environment: {os.getenv('PYTHON_ENV', 'NOT SET')}")
+logger.info(f"PORT: {os.getenv('PORT', 'NOT SET')}")
+logger.info(f"INDEX_PATH: {os.getenv('INDEX_PATH', 'NOT SET')}")
+logger.info(f"UPLOAD_PATH: {os.getenv('UPLOAD_PATH', 'NOT SET')}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting up Ultra-Fast Search System (Railway Edition)...")
+    logger.info("Starting up Ultra-Fast Search System (Fly.io Edition)...")
     
     # Create storage directories if they don't exist
     try:
-        index_path = getattr(settings, 'index_path', '/tmp/indexes')
-        data_path = getattr(settings, 'data_path', '/tmp/data')
+        index_path = os.getenv('INDEX_PATH', '/app/data/indexes')
+        data_path = os.getenv('UPLOAD_PATH', '/app/data/uploads')
         
         os.makedirs(index_path, exist_ok=True)
         os.makedirs(data_path, exist_ok=True)
+        os.makedirs('/app/data', exist_ok=True)
         
         logger.info(f"Storage directories created: {index_path}, {data_path}")
     except Exception as e:
@@ -38,7 +39,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Ultra-Fast Search System",
-    description="High-performance search engine with RAG capabilities",
+    description="High-performance search engine with RAG capabilities - Fly.io Edition",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -55,14 +56,14 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {
-        "message": "Ultra-Fast Search System - Railway Edition",
+        "message": "Ultra-Fast Search System - Fly.io Edition",
         "version": "1.0.0",
         "status": "running",
         "port": os.getenv("PORT", "8000"),
-        "environment": os.getenv("RAILWAY_ENVIRONMENT", "development"),
+        "environment": os.getenv("PYTHON_ENV", "development"),
         "storage": {
-            "index_path": getattr(settings, 'index_path', '/tmp/indexes') if 'settings' in globals() else '/tmp/indexes',
-            "data_path": getattr(settings, 'data_path', '/tmp/data') if 'settings' in globals() else '/tmp/data'
+            "index_path": os.getenv('INDEX_PATH', '/app/data/indexes'),
+            "data_path": os.getenv('UPLOAD_PATH', '/app/data/uploads')
         }
     }
 
@@ -71,8 +72,9 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": asyncio.get_event_loop().time(),
-        "environment": os.getenv("RAILWAY_ENVIRONMENT", "development"),
-        "storage_ready": True
+        "environment": os.getenv("PYTHON_ENV", "development"),
+        "storage_ready": True,
+        "port": os.getenv("PORT", "8000")
     }
 
 # Basic API endpoints
@@ -100,10 +102,11 @@ async def status():
         "system": "operational",
         "search_engine": "basic",
         "storage": {
-            "index_path": getattr(settings, 'index_path', '/tmp/indexes') if 'settings' in globals() else '/tmp/indexes',
-            "data_path": getattr(settings, 'data_path', '/tmp/data') if 'settings' in globals() else '/tmp/data'
+            "index_path": os.getenv('INDEX_PATH', '/app/data/indexes'),
+            "data_path": os.getenv('UPLOAD_PATH', '/app/data/uploads')
         },
-        "features": ["basic_search", "health_check", "status"]
+        "features": ["basic_search", "health_check", "status"],
+        "environment": os.getenv("PYTHON_ENV", "development")
     }
 
 if __name__ == "__main__":
